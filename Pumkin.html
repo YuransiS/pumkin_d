@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎃 Накорми Тыкву Багами - OS-System Halloween</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #1a0033 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            padding: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+        }
+
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            color: #ff6600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .company-info {
+            font-size: 14px;
+            color: #ffaa00;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { 
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ffff, 0 0 30px #00ff00; 
+            }
+            50% { 
+                text-shadow: 0 0 20px #00ff00, 0 0 40px #00ffff, 0 0 60px #00ff00, 0 0 80px #00ffff; 
+            }
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+            color: #ffaa00;
+        }
+
+        .score-item {
+            background: rgba(0,0,0,0.5);
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 2px solid #ff6600;
+        }
+
+        .game-area {
+            position: relative;
+            width: 650px;
+            height: 650px;
+            margin: 0 auto;
+            background: radial-gradient(circle at center, rgba(255,100,0,0.4) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 2px solid rgba(255,100,0,0.3);
+        }
+
+        .pumpkin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: float 3s ease-in-out infinite;
+            z-index: 100;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%); }
+            50% { transform: translate(-50%, calc(-50% - 10px)); }
+        }
+
+        .pumpkin:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .pumpkin.eating {
+            animation: eat 0.5s;
+        }
+
+        @keyframes eat {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            25% { transform: translate(-50%, -50%) scale(1.15) rotate(-5deg); }
+            75% { transform: translate(-50%, -50%) scale(1.15) rotate(5deg); }
+        }
+
+        .pumpkin.exploding {
+            animation: explode 1s forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2) rotate(360deg); opacity: 0; }
+        }
+
+        .cyber-pumpkin {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            filter: drop-shadow(0 0 40px rgba(255, 80, 0, 0.7));
+        }
+
+        .pumpkin-body {
+            position: absolute;
+            width: 100%;
+            height: 92%;
+            background: 
+                radial-gradient(ellipse at 30% 30%, #ff8844 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 35%, #ff6622 0%, transparent 45%),
+                linear-gradient(135deg, #cc4400 0%, #ff5500 15%, #ff6622 30%, #ff7733 50%, #ff6622 70%, #ff5500 85%, #cc4400 100%);
+            border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+            box-shadow: 
+                0 0 50px rgba(255, 80, 0, 0.6),
+                0 0 100px rgba(255, 80, 0, 0.3),
+                inset 0 0 60px rgba(255, 120, 0, 0.3),
+                inset -60px -60px 120px rgba(0, 0, 0, 0.6),
+                inset 60px 60px 100px rgba(255, 150, 50, 0.2);
+            animation: scaryBodyGlow 2.5s ease-in-out infinite;
+        }
+
+        /* Вертикальные рёбра тыквы */
+        .pumpkin-ridge {
+            position: absolute;
+            height: 88%;
+            top: 6%;
+            background: linear-gradient(to right, 
+                rgba(0, 0, 0, 0.5) 0%, 
+                rgba(0, 0, 0, 0.2) 10%,
+                transparent 30%, 
+                transparent 70%, 
+                rgba(255, 150, 50, 0.2) 90%,
+                rgba(255, 180, 80, 0.3) 100%);
+            border-radius: 50%;
+        }
+
+        .ridge-1 { left: 8%; width: 18%; }
+        .ridge-2 { left: 24%; width: 16%; }
+        .ridge-3 { left: 42%; width: 16%; transform: translateX(-50%); }
+        .ridge-4 { right: 24%; width: 16%; }
+        .ridge-5 { right: 8%; width: 18%; }
+
+        .pumpkin-stem {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 55px;
+            height: 80px;
+            background: 
+                linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, transparent 50%, rgba(100, 150, 50, 0.3) 100%),
+                linear-gradient(135deg, #446622 0%, #558833 20%, #669944 40%, #77aa55 60%, #669944 80%, #558833 100%);
+            border-radius: 30px 30px 10px 10px / 40px 40px 10px 10px;
+            box-shadow: 
+                0 0 25px rgba(100, 150, 50, 0.4),
+                0 10px 25px rgba(0, 0, 0, 0.8),
+                inset -12px -12px 25px rgba(0, 0, 0, 0.6),
+                inset 12px 12px 20px rgba(150, 200, 100, 0.3);
+            animation: scraryStemGlow 2.5s ease-in-out infinite;
+        }
+
+        /* Трещины на стебле */
+        .stem-crack {
+            position: absolute;
+            width: 2px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .crack-stem-1 { top: 20px; left: 15px; height: 25px; transform: rotate(-10deg); }
+        .crack-stem-2 { top: 35px; right: 12px; height: 20px; transform: rotate(15deg); }
+
+        /* СТРАШНЫЕ ВЫРЕЗАННЫЕ ГЛАЗА - треугольные */
+        .pumpkin-eye {
+            position: absolute;
+            top: 30%;
+            width: 0;
+            height: 0;
+            border-left: 35px solid transparent;
+            border-right: 35px solid transparent;
+            border-bottom: 60px solid #000000;
+            filter: drop-shadow(0 0 25px rgba(255, 100, 0, 0.8));
+        }
+
+        /* Внутреннее свечение вырезанных глаз */
+        .pumpkin-eye::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 0;
+            width: 70px;
+            height: 60px;
+            background: radial-gradient(ellipse at 50% 30%, rgba(255, 150, 0, 0.6) 0%, transparent 70%);
+            clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+        }
+
+        .left-eye {
+            left: 18%;
+            transform: rotate(5deg);
+        }
+
+        .right-eye {
+            right: 18%;
+            transform: rotate(-5deg);
+        }
+
+        /* ВЫРЕЗАННЫЙ НОС - перевёрнутый треугольник */
+        .pumpkin-nose {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 22px solid transparent;
+            border-right: 22px solid transparent;
+            border-top: 35px solid #000000;
+            filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.6));
+        }
+
+        .pumpkin-nose::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            bottom: 0;
+            width: 44px;
+            height: 35px;
+            background: radial-gradient(ellipse at 50% 70%, rgba(255, 150, 0, 0.5) 0%, transparent 80%);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        /* СТРАШНЫЙ ВЫРЕЗАННЫЙ РОТ - ОЧЕНЬ СИЛЬНЫЙ изгиб вверх */
+        .pumpkin-mouth {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 80px;
+            background: #000000;
+            clip-path: polygon(
+                0% 75%,
+                5% 65%,
+                12% 50%,
+                18% 60%,
+                26% 40%,
+                34% 55%,
+                42% 35%,
+                50% 50%,
+                58% 35%,
+                66% 55%,
+                74% 40%,
+                82% 60%,
+                88% 50%,
+                95% 65%,
+                100% 75%,
+                95% 78%,
+                88% 88%,
+                82% 78%,
+                74% 93%,
+                66% 78%,
+                58% 98%,
+                50% 83%,
+                42% 98%,
+                34% 78%,
+                26% 93%,
+                18% 78%,
+                12% 88%,
+                5% 78%
+            );
+            box-shadow: 
+                0 0 35px rgba(255, 100, 0, 0.8),
+                inset 0 0 40px rgba(255, 150, 0, 0.4);
+            filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.6));
+        }
+
+        /* Внутреннее свечение рта */
+        .mouth-glow {
+            position: absolute;
+            top: 40%;
+            left: 15%;
+            width: 70%;
+            height: 35%;
+            background: radial-gradient(ellipse at 50% 50%, rgba(255, 150, 0, 0.7) 0%, rgba(255, 100, 0, 0.4) 50%, transparent 90%);
+            border-radius: 50%;
+        }
+
+        @keyframes scaryBodyGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 50px rgba(255, 80, 0, 0.6),
+                    0 0 100px rgba(255, 80, 0, 0.3),
+                    inset 0 0 60px rgba(255, 120, 0, 0.3);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 70px rgba(255, 100, 0, 0.8),
+                    0 0 140px rgba(255, 80, 0, 0.5),
+                    inset 0 0 80px rgba(255, 150, 0, 0.4);
+            }
+        }
+
+        @keyframes scraryStemGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 25px rgba(100, 150, 50, 0.4),
+                    0 10px 25px rgba(0, 0, 0, 0.8);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 35px rgba(120, 180, 60, 0.6),
+                    0 10px 25px rgba(0, 0, 0, 0.8);
+            }
+        }
+
+        /* Светящиеся частицы вокруг тыквы */
+        .pumpkin-glow {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #ff6600, transparent);
+            border-radius: 50%;
+            animation: particleFloat 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .glow-1 { top: 10%; left: -15%; animation-delay: 0s; }
+        .glow-2 { top: 30%; right: -15%; animation-delay: 0.5s; }
+        .glow-3 { bottom: 30%; left: -10%; animation-delay: 1s; }
+        .glow-4 { bottom: 10%; right: -10%; animation-delay: 1.5s; }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0px); opacity: 0.6; }
+            50% { transform: translateY(-20px); opacity: 1; }
+        }
+
+        @keyframes bodyGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 30px rgba(255, 100, 0, 0.6),
+                    0 0 50px rgba(255, 100, 0, 0.4),
+                    inset 0 0 40px rgba(255, 150, 0, 0.4),
+                    inset -40px -40px 80px rgba(0, 0, 0, 0.4);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 40px rgba(255, 100, 0, 0.7),
+                    0 0 70px rgba(255, 100, 0, 0.5),
+                    inset 0 0 50px rgba(255, 200, 0, 0.5),
+                    inset -40px -40px 80px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        @keyframes stemGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 20px rgba(0, 255, 100, 0.6),
+                    0 5px 15px rgba(0, 0, 0, 0.5);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 30px rgba(0, 255, 100, 0.8),
+                    0 5px 15px rgba(0, 0, 0, 0.5),
+                    0 0 40px rgba(0, 255, 150, 0.5);
+            }
+        }
+
+        @keyframes eyeGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 25px rgba(102, 0, 255, 0.7),
+                    0 0 45px rgba(102, 0, 255, 0.5);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 35px rgba(102, 0, 255, 0.8),
+                    0 0 60px rgba(102, 0, 255, 0.7),
+                    0 0 80px rgba(102, 0, 255, 0.4);
+            }
+        }
+
+        @keyframes pupilGlow {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(255, 0, 136, 1);
+            }
+            50% { 
+                box-shadow: 0 0 35px rgba(255, 0, 136, 1),
+                           0 0 50px rgba(255, 0, 136, 0.8);
+            }
+        }
+
+        .bug {
+            position: absolute;
+            font-size: 2.5em;
+            cursor: pointer;
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: bugFloat 3s ease-in-out infinite;
+            z-index: 50;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.6));
+        }
+
+        .bug:hover {
+            transform: scale(1.3) rotate(15deg);
+            filter: drop-shadow(0 0 20px rgba(255, 255, 0, 1));
+        }
+
+        @keyframes bugFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(10deg); }
+        }
+
+        .bug.caught {
+            animation: flyToPumpkin 1s forwards;
+            z-index: 200;
+        }
+
+        @keyframes flyToPumpkin {
+            0% { 
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(0.7) rotate(180deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: scale(0.3) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .message {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            opacity: 0;
+            transition: opacity 0.5s;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .message.show {
+            opacity: 1;
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            color: #ffaa00;
+            border: 2px solid rgba(255,170,0,0.3);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: fall 3s linear forwards;
+            z-index: 1000;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .final-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(51,0,102,0.95));
+            padding: 50px;
+            border-radius: 20px;
+            border: 3px solid #ff6600;
+            box-shadow: 0 0 50px rgba(255,100,0,0.8);
+            z-index: 10000;
+            color: white;
+            text-align: center;
+            transition: transform 0.5s;
+            max-width: 90%;
+        }
+
+        .final-message.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .reset-btn {
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #ff6600, #ff9933);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255,100,0,0.5);
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,100,0,0.7);
+        }
+
+        .header-bug {
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .header-bug:hover {
+            transform: scale(1.3);
+        }
+
+        .header-bug.caught {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="company-info">
+                🏢 OS-System | 🌾 SmartFields Project | QA Department
+            </div>
+            <h1>🎃 Накорми Тыкву Багами! 🐛</h1>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">
+                🐛 Баги: <span id="bugs-fed">0</span>/10
+            </div>
+            <div class="score-item">
+                ⭐ Очки<span class="header-bug menu-bug-1" id="menu-bug-1">🦟</span>: <span id="score">0</span>
+            </div>
+        </div>
+
+        <div class="game-area" id="game-area">
+            <div class="pumpkin" id="pumpkin">
+                <div class="cyber-pumpkin">
+                    <div class="pumpkin-stem">
+                        <div class="stem-crack crack-stem-1"></div>
+                        <div class="stem-crack crack-stem-2"></div>
+                    </div>
+                    <div class="pumpkin-body">
+                        <div class="pumpkin-ridge ridge-1"></div>
+                        <div class="pumpkin-ridge ridge-2"></div>
+                        <div class="pumpkin-ridge ridge-3"></div>
+                        <div class="pumpkin-ridge ridge-4"></div>
+                        <div class="pumpkin-ridge ridge-5"></div>
+                    </div>
+                    <div class="pumpkin-eye left-eye"></div>
+                    <div class="pumpkin-eye right-eye"></div>
+                    <div class="pumpkin-nose"></div>
+                    <div class="pumpkin-mouth">
+                        <div class="mouth-glow"></div>
+                    </div>
+                    <div class="pumpkin-glow glow-1"></div>
+                    <div class="pumpkin-glow glow-2"></div>
+                    <div class="pumpkin-glow glow-3"></div>
+                    <div class="pumpkin-glow glow-4"></div>
+                </div>
+            </div>
+            <div class="message" id="message"></div>
+        </div>
+
+        <div class="instructions">
+            📱 <strong>Инструкция:</strong> Найдите и соберите все 10 багов, чтобы накормить тыкву!👻<br>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+    <div class="final-message" id="final-message"></div>
+
+    <script>
+        // Создание звёздного фона
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.width = Math.random() * 3 + 1 + 'px';
+            star.style.height = star.style.width;
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        let bugsFed = 0;
+        let score = 0;
+        const gameArea = document.getElementById('game-area');
+        const pumpkin = document.getElementById('pumpkin');
+        const messageEl = document.getElementById('message');
+        const bugsFedEl = document.getElementById('bugs-fed');
+        const scoreEl = document.getElementById('score');
+        const celebration = document.getElementById('celebration');
+        const finalMessage = document.getElementById('final-message');
+
+        const bugEmojis = ['🐛', '🐞', '🦗', '🕷️', '🦟',];
+        const encouragements = [
+            'Отличная работа! 🎉',
+            'Баг найден и скормлен! 🐛',
+            'QA мастер! 💪',
+            'Тыква довольна! 😊',
+            'Продолжай в том же духе! 🔥',
+            'SmartFields гордится тобой! 🌾',
+            'Багов не осталось! ✨'
+        ];
+
+        // Создание багов в разных местах игрового поля
+        function createBugsRandomly() {
+            const centerX = gameArea.offsetWidth / 2;
+            const centerY = gameArea.offsetHeight / 2;
+            const minDistance = 250; // Увеличенное минимальное расстояние от центра (тыквы)
+            const maxDistance = Math.min(gameArea.offsetWidth, gameArea.offsetHeight) / 2 - 50;
+
+            for (let i = 0; i < 9; i++) {
+                let x, y;
+                let attempts = 0;
+                
+                // Генерируем позицию вне зоны тыквы
+                do {
+                    x = Math.random() * (gameArea.offsetWidth - 100) + 25;
+                    y = Math.random() * (gameArea.offsetHeight - 100) + 25;
+                    
+                    const distanceFromCenter = Math.sqrt(
+                        Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+                    );
+                    
+                    // Баг должен быть достаточно далеко от центра, чтобы не скрываться за тыквой
+                    if (distanceFromCenter > minDistance && distanceFromCenter < maxDistance) {
+                        break;
+                    }
+                    
+                    attempts++;
+                } while (attempts < 100); // Увеличиваем количество попыток
+                
+                const bug = document.createElement('div');
+                bug.className = 'bug';
+                bug.textContent = bugEmojis[Math.floor(Math.random() * bugEmojis.length)];
+                bug.style.left = x + 'px';
+                bug.style.top = y + 'px';
+                bug.style.animationDelay = (i * 0.15) + 's';
+                
+                bug.addEventListener('click', function(e) {
+                    feedBug(bug, e);
+                });
+
+                gameArea.appendChild(bug);
+            }
+        }
+
+        function feedBug(bug, event) {
+            if (bug.classList.contains('caught')) return;
+            
+            bug.classList.add('caught');
+            
+            const pumpkinRect = pumpkin.getBoundingClientRect();
+            const bugRect = bug.getBoundingClientRect();
+            
+            bug.style.left = pumpkinRect.left - bugRect.left + (pumpkinRect.width / 2) + 'px';
+            bug.style.top = pumpkinRect.top - bugRect.top + (pumpkinRect.height / 2) + 'px';
+
+            setTimeout(() => {
+                bug.remove();
+                bugsFed++;
+                score += 100;
+                
+                bugsFedEl.textContent = bugsFed;
+                scoreEl.textContent = score;
+
+                pumpkin.classList.add('eating');
+                setTimeout(() => pumpkin.classList.remove('eating'), 500);
+
+                showMessage(encouragements[Math.floor(Math.random() * encouragements.length)]);
+
+                if (bugsFed >= 10) {
+                    triggerFinalEvent();
+                }
+            }, 1000);
+        }
+
+        function showMessage(text) {
+            messageEl.textContent = text;
+            messageEl.classList.add('show');
+            setTimeout(() => messageEl.classList.remove('show'), 2000);
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = -10 + 'px';
+                    confetti.style.background = ['#ff6600', '#ffaa00', '#ff3300', '#ffcc00'][Math.floor(Math.random() * 4)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    celebration.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        function triggerFinalEvent() {
+            setTimeout(() => {
+                pumpkin.classList.add('exploding');
+                createConfetti();
+                
+                setTimeout(() => {
+                    finalMessage.innerHTML = `
+                        <div style="font-size: 4em; margin-bottom: 20px;">🎃💥✨</div>
+                        <div style="font-size: 1.8em; margin-bottom: 20px;">ПОЗДРАВЛЯЕМ!</div>
+                        <div style="font-size: 1.2em; margin-bottom: 15px;">
+                            Тыква переполнена багами и превратилась в магическую<br>
+                            <span style="color: #ff6600;">✨ ЗОЛОТУЮ ТЫКВУ КАЧЕСТВА ✨</span>
+                        </div>
+                        <div style="font-size: 1em; margin-top: 20px; color: #ffaa00;">
+                            🏆 Ваш финальный счёт: ${score} очков<br>
+                            🐛 Багов накормлено: ${bugsFed}<br>
+                            🌾 SmartFields теперь без багов благодаря вам!
+                        </div>
+                        <div style="font-size: 0.9em; margin-top: 20px; color: #aaa;">
+                            От команды QA OS-System с Хелоуином 🎃
+                        </div>
+                        <button class="reset-btn" onclick="location.reload()">🔄 Играть снова</button>
+                    `;
+                    finalMessage.classList.add('show');
+                }, 1000);
+            }, 500);
+        }
+
+        // Создание начальных багов (9 штук в разных местах игрового поля)
+        createBugsRandomly();
+
+        // Добавление обработчика для бага в меню (только 1 баг)
+        const menuBug = document.getElementById('menu-bug-1');
+        if (menuBug) {
+            menuBug.addEventListener('click', function(e) {
+                feedMenuBug(menuBug, e);
+            });
+        }
+
+        function feedMenuBug(bug, event) {
+            if (bug.classList.contains('caught')) return;
+            
+            bug.classList.add('caught');
+            
+            // Получаем позицию бага в меню
+            const bugRect = bug.getBoundingClientRect();
+            
+            // Создаем временный элемент для анимации
+            const flyingBug = document.createElement('div');
+            flyingBug.textContent = bug.textContent;
+            flyingBug.style.position = 'fixed';
+            flyingBug.style.left = bugRect.left + 'px';
+            flyingBug.style.top = bugRect.top + 'px';
+            flyingBug.style.fontSize = '1.2em';
+            flyingBug.style.zIndex = '9999';
+            flyingBug.style.pointerEvents = 'none';
+            flyingBug.className = 'bug caught';
+            document.body.appendChild(flyingBug);
+
+            const pumpkinRect = pumpkin.getBoundingClientRect();
+            
+            setTimeout(() => {
+                flyingBug.style.left = pumpkinRect.left + (pumpkinRect.width / 2) + 'px';
+                flyingBug.style.top = pumpkinRect.top + (pumpkinRect.height / 2) + 'px';
+            }, 10);
+
+            setTimeout(() => {
+                flyingBug.remove();
+                bug.style.opacity = '0';
+                
+                bugsFed++;
+                score += 150; // Баги из меню дают больше очков!
+                
+                bugsFedEl.textContent = bugsFed;
+                scoreEl.textContent = score;
+
+                pumpkin.classList.add('eating');
+                setTimeout(() => pumpkin.classList.remove('eating'), 500);
+
+                showMessage('Секретный баг найден! 🎯 +50 бонус!');
+
+                if (bugsFed >= 10) {
+                    triggerFinalEvent();
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
